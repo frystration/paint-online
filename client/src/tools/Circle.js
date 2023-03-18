@@ -1,6 +1,6 @@
 import Tool from "./Tool";
 
-export default class Rect extends Tool {
+export default class Circle extends Tool {
     constructor(canvas) {
         super(canvas)
         this.listen()
@@ -17,11 +17,12 @@ export default class Rect extends Tool {
     }
 
     mouseDownHandler(e) {
+        let canvasData = this.canvas.toDataURL()
         this.mouseDown = true
         this.ctx.beginPath()
         this.startX = e.pageX - e.target.offsetLeft;
         this.startY = e.pageY - e.target.offsetTop;
-        this.saved = this.canvas.toDataURL()
+        this.saved = canvasData
     }
 
     mouseMoveHandler(e) {
@@ -31,18 +32,22 @@ export default class Rect extends Tool {
             let width = currentX - this.startX;
             let height = currentY - this.startY;
 
-            this.draw(this.startX, this.startY, width, height)
+            let r = Math.sqrt(width**2  + height**2)/2
+            let x = (this.startX + currentX)/2
+            let y = (this.startY + currentY)/2
+
+            this.draw(x, y, r)
         }
     }
 
-    draw(x, y, w, h) {
+    draw(x, y, r) {
         const img = new Image()
         img.src = this.saved
         img.onload = () => {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height)
             this.ctx.beginPath()
-            this.ctx.rect(x, y, w, h)
+            this.ctx.arc (x, y, r, 0,2*Math.PI)
             this.ctx.fill()
             this.ctx.stroke()
         }
