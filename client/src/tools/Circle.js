@@ -1,8 +1,8 @@
 import Tool from "./Tool";
 
 export default class Circle extends Tool {
-    constructor(canvas) {
-        super(canvas)
+    constructor(canvas, socket, id) {
+        super(canvas, socket, id)
         this.listen()
     }
 
@@ -14,15 +14,27 @@ export default class Circle extends Tool {
 
     mouseUpHandler(e) {
         this.mouseDown = false
+        this.socket.send(JSON.stringify({
+            method: "draw",
+            id: this.id,
+            figure: {
+                type: "circle",
+                x: this.x,
+                y: this.y,
+                r: this.r,
+                color: this.ctx.fillStyle,
+                strokeColor: this.ctx.strokeStyle,
+                strokeWidth: this.ctx.lineWidth
+            }
+        }))
     }
 
     mouseDownHandler(e) {
-        let canvasData = this.canvas.toDataURL()
         this.mouseDown = true
         this.ctx.beginPath()
         this.startX = e.pageX - e.target.offsetLeft;
         this.startY = e.pageY - e.target.offsetTop;
-        this.saved = canvasData
+        this.saved = this.canvas.toDataURL()
     }
 
     mouseMoveHandler(e) {
@@ -32,11 +44,11 @@ export default class Circle extends Tool {
             let width = currentX - this.startX;
             let height = currentY - this.startY;
 
-            let r = Math.sqrt(width**2  + height**2)/2
-            let x = (this.startX + currentX)/2
-            let y = (this.startY + currentY)/2
+            this.r = Math.sqrt(width**2  + height**2)/2
+            this.x = (this.startX + currentX)/2
+            this.y = (this.startY + currentY)/2
 
-            this.draw(x, y, r)
+            this.draw(this.x, this.y, this.r)
         }
     }
 
@@ -51,5 +63,15 @@ export default class Circle extends Tool {
             this.ctx.fill()
             this.ctx.stroke()
         }
+    }
+
+    static staticDraw(ctx, x, y, r, color, strokeColor, strokeWidth) {
+        ctx.strokeStyle = strokeColor
+        ctx.lineWidth = strokeWidth
+        ctx.fillStyle = color
+        ctx.beginPath()
+        ctx.arc (x, y, r, 0,2*Math.PI)
+        ctx.fill()
+        ctx.stroke()
     }
 }

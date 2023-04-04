@@ -30,6 +30,7 @@ class CanvasState {
 
     pushToUndo(data) {
         this.undoList.push(data)
+
     }
 
     pushToRedo(data) {
@@ -50,6 +51,7 @@ class CanvasState {
         } else {
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         }
+
     }
 
     redo() {
