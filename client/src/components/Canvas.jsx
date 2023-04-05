@@ -81,13 +81,23 @@ const Canvas = observer(() => {
             case "line":
                Line.staticDraw(ctx,figure.startX, figure.startY, figure.x, figure.y, figure.color, figure.width)
                break
+            case "pushToUndo":
+                canvasState.pushToUndo(figure.data)
+               break
+            case "undo":
+                canvasState.undoWS()
+                break
+            case "redo":
+                canvasState.redoWS()
+                break
+
 
         }
     }
 
     const mouseDownHandler = () => {
         let data = canvasRef.current.toDataURL()
-        canvasState.pushToUndo(data)
+        canvasState.sendToUndo(data)
     }
 
     const mouseUpHandler = () => {
